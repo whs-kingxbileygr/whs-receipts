@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wolhaiksong — Receipts</title>
+  <title>Wolhaiksong — Comprobantes</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
@@ -14,47 +15,34 @@
 <div id="appLoading" style="position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px">
   <span style="font-size:48px;animation:spin 2s linear infinite;">❄️</span>
   <span style="font-family:'DM Serif Display',serif;font-size:24px;color:#8919B0">Wolhaiksong</span>
-  <span style="font-size:13px;color:var(--text-muted)">Cargando...</span>
-  <style>
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-  </style>
+  <span style="font-size:13px;color:var(--text-muted)" data-i18n="loading">Cargando...</span>
+  <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
 </div>
 
 <div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:998;flex-direction:column;gap:20px">
   <span style="font-size:56px">❄️</span>
   <span style="font-family:'DM Serif Display',serif;font-size:36px;color:#8919B0">Wolhaiksong</span>
-  <p style="font-size:14px;color:var(--text-muted);margin-top:-8px">Receipts in the cloud</p>
-  <button id="btnGoogleLogin" style="
-    display:flex;align-items:center;gap:10px;
-    background:#fff;color:#3c4043;
-    border:1px solid #dadce0;border-radius:8px;
-    padding:10px 24px;font-size:15px;font-weight:500;
-    cursor:pointer;margin-top:8px;
-    box-shadow:0 1px 3px rgba(0,0,0,0.12);
-    transition:box-shadow 0.2s;
-  " onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'"
-     onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.12)'">
+  <p style="font-size:14px;color:var(--text-muted);margin-top:-8px" data-i18n="login_tagline">Comprobantes en la nube</p>
+  <button id="btnGoogleLogin" style="display:flex;align-items:center;gap:10px;background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:8px;padding:10px 24px;font-size:15px;font-weight:500;cursor:pointer;margin-top:8px;box-shadow:0 1px 3px rgba(0,0,0,0.12);transition:box-shadow 0.2s"
+    onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'" onmouseout="this.style.boxShadow='0 1px 3px rgba(0,0,0,0.12)'">
     <svg width="20" height="20" viewBox="0 0 48 48">
       <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v8.51h12.93c-.56 2.95-2.26 5.45-4.8 7.12v5.92h7.77c4.55-4.19 7.08-10.36 7.08-16.99z"/>
       <path fill="#34A853" d="M24 48c6.48 0 11.93-2.15 15.9-5.83l-7.77-5.92c-2.15 1.45-4.9 2.3-8.13 2.3-6.26 0-11.57-4.22-13.47-9.91H2.52v6.1C6.48 42.65 14.68 48 24 48z"/>
       <path fill="#FBBC05" d="M10.53 28.64A14.97 14.97 0 0 1 9.6 24c0-1.62.28-3.19.93-4.64v-6.1H2.52A23.93 23.93 0 0 0 0 24c0 3.86.93 7.5 2.52 10.74l8.01-6.1z"/>
       <path fill="#EA4335" d="M24 9.45c3.52 0 6.68 1.21 9.17 3.59l6.87-6.87C35.92 2.38 30.48 0 24 0 14.68 0 6.48 5.35 2.52 13.26l8.01 6.1C12.43 13.67 17.74 9.45 24 9.45z"/>
     </svg>
-    Iniciar sesión con Google
+    <span data-i18n="login_btn">Iniciar sesión con Google</span>
   </button>
-  <p style="font-size:11px;color:var(--text-muted);margin-top:4px">Tus presets se sincronizan en todos tus dispositivos</p>
+  <p style="font-size:11px;color:var(--text-muted);margin-top:4px" data-i18n="login_hint">Tus presets se sincronizan en todos tus dispositivos</p>
 </div>
 
 <div class="modal-overlay" id="confirmModal" style="background:rgba(0,0,0,0.7)">
   <div class="confirm-dialog">
-    <h3 id="confirmTitle">Confirmar acción</h3>
+    <h3 id="confirmTitle"></h3>
     <p id="confirmMessage"></p>
     <div class="confirm-buttons">
-      <button class="btn-secondary" id="btnConfirmCancel">Cancelar</button>
-      <button class="btn-danger" id="btnConfirmYes">Eliminar</button>
+      <button class="btn-secondary" id="btnConfirmCancel" data-i18n="confirm_cancel">Cancelar</button>
+      <button class="btn-danger"    id="btnConfirmYes"    data-i18n="confirm_delete">Eliminar</button>
     </div>
   </div>
 </div>
@@ -62,80 +50,77 @@
 <div class="modal-overlay" id="invoiceProfileModal">
   <div class="settings-card">
     <div class="settings-header">
-      <h2>Perfiles de comprobante</h2>
+      <h2 data-i18n="profile_modal_title">Perfiles de comprobante</h2>
       <button class="modal-close" id="btnCloseInvoiceProfile">✕</button>
     </div>
-    <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px" data-i18n="profile_modal_hint">
       Cada perfil tiene sus propios presets guardados de forma independiente.
     </p>
     <ul class="inv-profile-list" id="invProfileList"></ul>
     <div class="inv-profile-new-row">
-      <input type="text" id="newInvProfileName" class="inv-profile-input" placeholder="Nombre del nuevo perfil" />
-      <button class="btn-save" id="btnCreateInvProfile">+ Crear</button>
+      <input type="text" id="newInvProfileName" class="inv-profile-input" data-i18n-ph="new_profile_placeholder" placeholder="Nombre del nuevo perfil" />
+      <button class="btn-save" id="btnCreateInvProfile" data-i18n="create_profile_btn">+ Crear</button>
     </div>
     <p class="auth-error" id="invProfileError" style="margin-top:8px"></p>
   </div>
 </div>
 
-<div class="app" id="mainApp">
+<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
 
+<div class="app" id="mainApp">
   <aside class="sidebar">
     <div class="sidebar-brand">
       <span class="brand-icon">❄️</span>
       <span class="brand-text">Wolhaiksong</span>
+      <button class="btn-sidebar-close" id="btnSidebarClose" aria-label="Cerrar menú">✕</button>
     </div>
 
-    <div id="sidebarUserBar" style="
-      display:flex;align-items:center;gap:8px;
-      padding:8px 16px 10px;
-      border-bottom:1px solid var(--border);
-      margin-bottom:4px;
-    ">
+    <div id="sidebarUserBar" style="display:flex;align-items:center;gap:8px;padding:8px 16px 10px;border-bottom:1px solid var(--border);margin-bottom:4px">
       <img id="userAvatar" src="" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--surface2)" />
       <span id="userName" style="font-size:11px;color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-      <button id="btnSignOut" style="
-        font-size:10px;color:var(--text-muted);background:none;
-        border:1px solid var(--border);border-radius:4px;
-        padding:2px 7px;cursor:pointer;white-space:nowrap;
-        transition:color 0.15s;
-      " onmouseover="this.style.color='var(--danger)'"
-         onmouseout="this.style.color='var(--text-muted)'">Salir</button>
+      <button id="btnSignOut" data-i18n="signout" style="font-size:10px;color:var(--text-muted);background:none;border:1px solid var(--border);border-radius:4px;padding:2px 7px;cursor:pointer;white-space:nowrap;transition:color 0.15s"
+        onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">Salir</button>
     </div>
 
     <div class="sidebar-profile-bar">
-      <p class="sidebar-label" style="padding:0 0 6px">Perfil activo</p>
+      <p class="sidebar-label" style="padding:0 0 6px" data-i18n="active_profile">Perfil activo</p>
       <button class="inv-profile-btn" id="btnSwitchInvProfile">
         <span class="inv-profile-icon">🏪</span>
-        <span id="activeInvProfileName">Sin perfil</span>
+        <span id="activeInvProfileName" data-i18n="no_profile">Sin perfil</span>
         <span class="inv-profile-chevron">▾</span>
       </button>
     </div>
 
     <div class="sidebar-section">
-      <p class="sidebar-label">Presets guardados</p>
+      <p class="sidebar-label" data-i18n="saved_presets">Presets guardados</p>
       <ul class="preset-list" id="presetList"></ul>
-      <button class="btn-new" id="btnNewPreset">+ Nuevo preset</button>
+      <button class="btn-new" id="btnNewPreset" data-i18n="new_preset_btn">+ Nuevo preset</button>
     </div>
-
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <h1 class="page-title"></h1>
+      <div class="topbar-left">
+        <button class="btn-sidebar-toggle" id="btnSidebarToggle" aria-label="Menú">
+          <span></span><span></span><span></span>
+        </button>
+        <h1 class="page-title"></h1>
+      </div>
       <div class="topbar-actions">
-        <button class="btn-secondary" id="btnPreview">👁 Vista previa</button>
+        <button class="btn-secondary" id="btnPreview" data-i18n="preview_btn">👁 Vista previa</button>
         <div class="hamburger-wrap">
           <button class="btn-hamburger" id="btnHamburger" title="Opciones">
             <span></span><span></span><span></span>
           </button>
           <div class="hamburger-dropdown" id="hamburgerDropdown">
-            <button class="hd-item" id="hdPrint">🖨&nbsp; Imprimir / PDF</button>
-            <button class="hd-item" id="hdDownloadPng">🖼&nbsp; Guardar PNG</button>
-            <button class="hd-item" id="hdDownloadPdf">📄&nbsp; Guardar PDF</button>
+            <button class="hd-item" id="hdPrint"         data-i18n="print">🖨&nbsp; Imprimir / PDF</button>
+            <button class="hd-item" id="hdDownloadPng"   data-i18n="save_png">🖼&nbsp; Guardar PNG</button>
+            <button class="hd-item" id="hdDownloadPdf"   data-i18n="save_pdf">📄&nbsp; Guardar PDF</button>
             <div class="hd-divider"></div>
-            <button class="hd-item" id="hdSwitchProfile">👤&nbsp; Cambiar perfil</button>
+            <button class="hd-item" id="hdSwitchProfile" data-i18n="switch_profile">👤&nbsp; Cambiar perfil</button>
             <div class="hd-divider"></div>
-            <button class="hd-item" id="hdToggleTheme">🌙&nbsp; <span id="hdThemeLabel">Modo claro</span></button>
+            <button class="hd-item" id="hdToggleTheme">🌙&nbsp; <span id="hdThemeLabel" data-i18n="light_mode">Modo claro</span></button>
+            <button class="hd-item" id="btnLangToggle">🌐 English</button>
           </div>
         </div>
       </div>
@@ -145,120 +130,124 @@
       <form id="invoiceForm" autocomplete="off">
 
         <section class="card">
-          <h2 class="card-title"><span class="card-num">01</span> Datos del Servicio</h2>
+          <h2 class="card-title"><span class="card-num">01</span> <span data-i18n="section_01">Datos del Servicio</span></h2>
           <div class="grid-2">
             <div class="field">
-              <label>Nombre del servicio</label>
-              <input type="text" id="radioNombre" placeholder="Ej: Servicio de Streaming" />
+              <label data-i18n="lbl_service_name">Nombre del servicio</label>
+              <input type="text" id="radioNombre" data-i18n-ph="ph_service_name" placeholder="Ej: Servicio de Streaming" />
             </div>
             <div class="field">
-              <label>Frecuencia (MHz)</label>
-              <input type="text" id="radioFrecuencia" placeholder="(Opcional) Ej: 105.1 Mhz" />
+              <label data-i18n="lbl_frequency">Frecuencia (MHz)</label>
+              <input type="text" id="radioFrecuencia" data-i18n-ph="ph_frequency" placeholder="(Opcional) Ej: 105.1 Mhz" />
             </div>
             <div class="field">
-              <label>Sitio Web</label>
-              <input type="text" id="radioWeb" placeholder="Ej: www.google.com" />
+              <label data-i18n="lbl_website">Sitio Web</label>
+              <input type="text" id="radioWeb" data-i18n-ph="ph_website" placeholder="Ej: www.google.com" />
             </div>
             <div class="field">
-              <label>Dirección</label>
-              <input type="text" id="radioDireccion" placeholder="Ej: Av. Siempre Viva 123" />
+              <label data-i18n="lbl_address">Dirección</label>
+              <input type="text" id="radioDireccion" data-i18n-ph="ph_address" placeholder="Ej: Av. Siempre Viva 123" />
             </div>
             <div class="field">
-              <label>Teléfono</label>
-              <input type="text" id="radioTelefono" placeholder="Ej: 3735404142" />
+              <label data-i18n="lbl_phone">Teléfono</label>
+              <input type="text" id="radioTelefono" data-i18n-ph="ph_phone" placeholder="Ej: 3735404142" />
             </div>
             <div class="field">
-              <label>Correo Electrónico</label>
-              <input type="email" id="radioCorreo" placeholder="Ej: contacto@tuempresa.com.ar" />
+              <label data-i18n="lbl_email">Correo Electrónico</label>
+              <input type="email" id="radioCorreo" data-i18n-ph="ph_email" placeholder="Ej: contacto@tuempresa.com.ar" />
             </div>
             <div class="field" style="grid-column:1/-1">
-              <label>Marca de Agua <span style="font-weight:400;opacity:0.6">(dejar vacío para no mostrar)</span></label>
-              <input type="text" id="marcaDeAgua" placeholder="Ej: FM Amistad 105.1 MHz" />
+              <label>
+                <span data-i18n="lbl_watermark">Marca de Agua</span>
+                <span style="font-weight:400;opacity:0.6" data-i18n="lbl_watermark_hint">(dejar vacío para no mostrar)</span>
+              </label>
+              <input type="text" id="marcaDeAgua" data-i18n-ph="ph_watermark" placeholder="Ej: FM Amistad 105.1 MHz" />
             </div>
           </div>
         </section>
 
         <section class="card">
-          <h2 class="card-title"><span class="card-num">02</span> Datos del Cliente</h2>
+          <h2 class="card-title"><span class="card-num">02</span> <span data-i18n="section_02">Datos del Cliente</span></h2>
           <div class="grid-2">
             <div class="field">
-              <label>Nombre o Razón Social</label>
-              <input type="text" id="clienteNombre" placeholder="Ej: Panadería El Trigo" />
+              <label data-i18n="lbl_client_name">Nombre o Razón Social</label>
+              <input type="text" id="clienteNombre" data-i18n-ph="ph_client_name" placeholder="Ej: Panadería El Trigo" />
             </div>
             <div class="field">
-              <label>Dirección</label>
-              <input type="text" id="clienteDireccion" placeholder="Ej: Av. Siempre Viva 123" />
+              <label data-i18n="lbl_client_address">Dirección</label>
+              <input type="text" id="clienteDireccion" data-i18n-ph="ph_client_address" placeholder="Ej: Av. Siempre Viva 123" />
             </div>
           </div>
         </section>
 
         <section class="card">
-          <h2 class="card-title"><span class="card-num">03</span> Detalles del Servicio</h2>
+          <h2 class="card-title"><span class="card-num">03</span> <span data-i18n="section_03">Detalles del Servicio</span></h2>
           <div class="grid-2">
             <div class="field">
-              <label>Fecha de cobro (MM-AAAA)</label>
-              <input type="text" id="mesPublicidad" placeholder="01-2026" maxlength="7" />
+              <label data-i18n="lbl_billing_date">Fecha de cobro (MM-AAAA)</label>
+              <input type="text" id="mesPublicidad" data-i18n-ph="ph_billing_date" placeholder="01-2026" maxlength="7" />
             </div>
             <div class="field">
-              <label>Razón de Cobro</label>
-              <input type="text" id="razonCobro" placeholder="Ej: Servicio de Streaming" />
+              <label data-i18n="lbl_reason">Razón de Cobro</label>
+              <input type="text" id="razonCobro" data-i18n-ph="ph_reason" placeholder="Ej: Servicio de Streaming" />
             </div>
             <div class="field">
-              <label>Monto ($ ARS)</label>
-              <input type="number" id="monto" placeholder="10000" min="0" />
+              <label data-i18n="lbl_amount">Monto ($ ARS)</label>
+              <input type="number" id="monto" data-i18n-ph="ph_amount" placeholder="10000" min="0" />
             </div>
           </div>
         </section>
 
         <section class="card">
-          <h2 class="card-title"><span class="card-num">04</span> Información de Pago</h2>
+          <h2 class="card-title"><span class="card-num">04</span> <span data-i18n="section_04">Información de Pago</span></h2>
           <div class="grid-2">
             <div class="field">
-              <label>Alias</label>
-              <input type="text" id="alias" placeholder="E: mialias123" />
+              <label data-i18n="lbl_alias">Alias</label>
+              <input type="text" id="alias" data-i18n-ph="ph_alias" placeholder="E: mialias123" />
             </div>
           </div>
           <div class="qr-upload-row">
             <div class="qr-upload-left">
               <label class="field-label-sm">
-                Imagen del QR de pago <span class="label-hint">(se guarda en el preset)</span>
+                <span data-i18n="lbl_qr">Imagen del QR de pago</span>
+                <span class="label-hint" data-i18n="lbl_qr_hint">(se guarda en el preset)</span>
               </label>
               <div class="qr-drop-area" id="qrDropArea">
                 <input type="file" id="qrImageInput" accept="image/*" style="display:none" />
                 <div class="qr-drop-inner" id="qrDropInner">
                   <span class="qr-drop-icon">🖼</span>
                   <span class="qr-drop-text">
-                    Arrastrá tu QR aquí o
-                    <button type="button" class="btn-link" id="btnBrowseQr">seleccioná un archivo</button>
+                    <span data-i18n="qr_drop_text">Arrastrá tu QR aquí o</span>
+                    <button type="button" class="btn-link" id="btnBrowseQr" data-i18n="qr_drop_link">seleccioná un archivo</button>
                   </span>
-                  <span class="qr-drop-hint">PNG, JPG — se guarda en el preset</span>
+                  <span class="qr-drop-hint" data-i18n="qr_drop_hint">PNG, JPG — se guarda en el preset</span>
                 </div>
               </div>
             </div>
             <div class="qr-preview-wrap" id="qrPreviewWrap" style="display:none">
               <img id="qrPreviewImg" src="" alt="QR preview" />
-              <button type="button" class="btn-remove-qr" id="btnRemoveQr">✕ Quitar</button>
+              <button type="button" class="btn-remove-qr" id="btnRemoveQr" data-i18n="remove_qr">✕ Quitar</button>
             </div>
           </div>
         </section>
 
         <section class="card">
-          <h2 class="card-title"><span class="card-num">05</span> Firma Digital</h2>
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+          <h2 class="card-title"><span class="card-num">05</span> <span data-i18n="section_05">Firma Digital</span></h2>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px" data-i18n="sig_hint">
             El fondo se elimina automáticamente, dejando solo la firma visible en el comprobante.
           </p>
           <div class="qr-upload-row">
             <div class="qr-upload-left">
-              <label class="field-label-sm">Imagen de la firma</label>
+              <label class="field-label-sm" data-i18n="lbl_sig">Imagen de la firma</label>
               <div class="qr-drop-area" id="sigDropArea">
                 <input type="file" id="sigImageInput" accept="image/*" style="display:none" />
                 <div class="qr-drop-inner" id="sigDropInner">
                   <span class="qr-drop-icon">✍️</span>
                   <span class="qr-drop-text">
-                    Arrastrá la firma aquí o
-                    <button type="button" class="btn-link" id="btnBrowseSig">seleccioná un archivo</button>
+                    <span data-i18n="sig_drop_text">Arrastrá la firma aquí o</span>
+                    <button type="button" class="btn-link" id="btnBrowseSig" data-i18n="sig_drop_link">seleccioná un archivo</button>
                   </span>
-                  <span class="qr-drop-hint">PNG, JPG — se eliminará el fondo automáticamente</span>
+                  <span class="qr-drop-hint" data-i18n="sig_drop_hint">PNG, JPG — se eliminará el fondo automáticamente</span>
                 </div>
               </div>
             </div>
@@ -266,7 +255,7 @@
               <div class="sig-preview-box">
                 <img id="sigPreviewImg" src="" alt="Firma" />
               </div>
-              <button type="button" class="btn-remove-qr" id="btnRemoveSig">✕ Quitar</button>
+              <button type="button" class="btn-remove-qr" id="btnRemoveSig" data-i18n="remove_sig">✕ Quitar</button>
             </div>
           </div>
         </section>
@@ -274,11 +263,11 @@
         <section class="card card-actions">
           <div class="preset-save-row">
             <div class="field flex-1">
-              <label>Nombre del Preset</label>
-              <input type="text" id="presetNombre" placeholder="Ej: Panadería El Trigo" />
+              <label data-i18n="lbl_preset_name">Nombre del Preset</label>
+              <input type="text" id="presetNombre" data-i18n-ph="ph_preset_name" placeholder="Ej: Panadería El Trigo" />
             </div>
-            <button type="button" class="btn-save"   id="btnSavePreset">💾 Guardar preset</button>
-            <button type="button" class="btn-danger" id="btnDeletePreset" style="display:none">🗑 Eliminar preset</button>
+            <button type="button" class="btn-save"   id="btnSavePreset"   data-i18n="save_preset">💾 Guardar preset</button>
+            <button type="button" class="btn-danger" id="btnDeletePreset" data-i18n="delete_preset" style="display:none">🗑 Eliminar preset</button>
           </div>
         </section>
 
@@ -291,7 +280,6 @@
         <div id="invoicePreview"></div>
       </div>
     </div>
-
   </main>
 </div>
 
@@ -306,20 +294,23 @@
       <p  data-inv="radioWeb"></p>
     </div>
     <div class="inv-section">
-      <div class="inv-section-title">Datos del Cliente</div>
-      <div class="inv-field-label">Nombre o Razón Social:</div>
+      <div class="inv-section-title" data-inv-i18n="inv_client_section">Datos del Cliente</div>
+      <div class="inv-field-label"   data-inv-i18n="inv_name_label">Nombre o Razón Social:</div>
       <div class="inv-field-box" data-inv="clienteNombre"></div>
-      <div class="inv-field-label">Dirección:</div>
+      <div class="inv-field-label"   data-inv-i18n="inv_address_label">Dirección:</div>
       <div class="inv-field-box" data-inv="clienteDireccion"></div>
     </div>
     <div class="inv-section">
-      <div class="inv-section-title">Detalles del Servicio</div>
+      <div class="inv-section-title" data-inv-i18n="inv_service_section">Detalles del Servicio</div>
       <div class="inv-service-body">
         <div class="inv-service-left">
-          <div class="inv-field-label">Fecha de cobro:</div>
+          <div class="inv-field-label" data-inv-i18n="inv_date_label">Fecha de cobro:</div>
           <div class="inv-field-box" data-inv="mesPublicidad"></div>
           <table class="inv-table">
-            <thead><tr><th>Descripción</th><th>Monto ($ ARS)</th></tr></thead>
+            <thead><tr>
+              <th data-inv-i18n="inv_desc_col">Descripción</th>
+              <th data-inv-i18n="inv_amount_col">Monto ($ ARS)</th>
+            </tr></thead>
             <tbody>
               <tr>
                 <td data-inv="razonCobro"></td>
@@ -334,10 +325,10 @@
       </div>
     </div>
     <div class="inv-total-row">
-      <span class="inv-total-text">TOTAL: $ <span data-inv="total"></span></span>
+      <span class="inv-total-text"><span data-inv-i18n="inv_total">TOTAL: $</span> <span data-inv="total"></span></span>
     </div>
     <div class="inv-firma">
-      <div class="inv-firma-label">Firma:</div>
+      <div class="inv-firma-label" data-inv-i18n="inv_firma_label">Firma:</div>
       <div class="inv-firma-area">
         <div data-inv-slot="signature" class="inv-signature-slot"></div>
         <span class="inv-firma-underline"></span>
@@ -348,8 +339,8 @@
         <span data-inv="radioNombre"></span>&nbsp;<span data-inv="radioFrecuencia"></span>
       </div>
       <div>
-        Dir: <span data-inv="radioDireccion"></span> |
-        Tel: <span data-inv="radioTelefono"></span> |
+        <span data-inv-i18n="inv_dir">Dir:</span> <span data-inv="radioDireccion"></span> |
+        <span data-inv-i18n="inv_tel">Tel:</span> <span data-inv="radioTelefono"></span> |
         Email: <span data-inv="radioCorreo"></span> |
         Web: <span data-inv="radioWeb"></span>
       </div>
@@ -363,6 +354,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="lang.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
