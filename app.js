@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════
-   WOLHAIKSONG - Receipts
-   Auth : Google
+   WOLHAIKSONG — Receipts
+   Auth : Google 
    Data : Cloud Firestore
 ══════════════════════════════════════════ */
 
@@ -45,8 +45,8 @@ function slugify(str) {
 
 function validateInvoiceData(data) {
   const errors = [];
-  if (!data.radioNombre?.trim()) errors.push('El nombre del servicio es requerido');
-  if (data.monto && isNaN(parseFloat(data.monto))) errors.push('El monto debe ser un número');
+  if (!data.radioNombre?.trim()) errors.push(t('val_service_required'));
+  if (data.monto && isNaN(parseFloat(data.monto))) errors.push(t('val_amount_invalid'));
   return errors;
 }
 
@@ -112,7 +112,6 @@ async function compressImage(file, maxSize = 120) {
   });
 }
 
-/* ── STATE ──────────────────────────────── */
 let currentUser     = null;
 let invoiceProfiles = [];
 let activeProfileId = null;
@@ -121,7 +120,6 @@ let activePresetId  = null;
 let customQrBase64  = null;
 let signatureBase64 = null;
 
-/* ── DOM REFS ───────────────────────────── */
 const invoiceProfileModal = document.getElementById('invoiceProfileModal');
 const previewModal        = document.getElementById('previewModal');
 const mainApp             = document.getElementById('mainApp');
@@ -168,6 +166,15 @@ const fields = {
 
 document.addEventListener('DOMContentLoaded', () => {
   applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+  applyTranslations();
+  updateLangToggle();
+
+  document.getElementById('btnLangToggle').addEventListener('click', () => {
+    setLang(currentLang === 'es' ? 'en' : 'es');
+    hamburgerDropdown.classList.remove('open');
+    renderPresetList();
+    renderInvoiceProfileList();
+  });
 
   document.getElementById('btnGoogleLogin').addEventListener('click', () => {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -255,7 +262,7 @@ function renderInvoiceProfileList() {
   if (invoiceProfiles.length === 0) {
     const li = document.createElement('li');
     li.style.cssText = 'color:var(--text-muted);font-size:12px;padding:8px;';
-    li.textContent = 'No tenés perfiles todavía. Creá uno abajo.';
+    li.textContent = t('no_profiles_yet');
     list.appendChild(li);
     return;
   }
@@ -285,8 +292,8 @@ function renderInvoiceProfileList() {
     delBtn.addEventListener('click', async e => {
       e.stopPropagation();
       const confirmed = await showConfirmDialog(
-        `¿Eliminar el perfil "${profile.name}"? Se borrarán todos sus presets.`,
-        'Eliminar perfil'
+        t('confirm_delete_profile').replace('{name}', profile.name),
+        t('confirm_delete_title')
       );
       if (!confirmed) return;
 
@@ -374,7 +381,7 @@ function renderPresetList() {
   if (!activeProfileId) {
     const li = document.createElement('li');
     li.style.cssText = 'color:var(--text-muted);font-size:12px;padding:8px 12px;';
-    li.textContent = 'Seleccioná un perfil para ver los presets.';
+    li.textContent = t('no_presets_select_profile');
     presetList.appendChild(li);
     return;
   }
@@ -382,7 +389,7 @@ function renderPresetList() {
   if (presets.length === 0) {
     const li = document.createElement('li');
     li.style.cssText = 'color:var(--text-muted);font-size:12px;padding:8px 12px;';
-    li.textContent = 'Sin presets guardados';
+    li.textContent = t('no_presets_saved');
     presetList.appendChild(li);
     return;
   }
@@ -406,22 +413,22 @@ function loadPreset(preset) {
 
 btnSavePreset.addEventListener('click', async () => {
   if (!activeProfileId) {
-    alert('Por favor seleccioná o creá un perfil primero.');
+    alert(t('alert_select_profile'));
     openInvoiceProfileModal();
     return;
   }
 
   const presetName = presetNombre.value.trim();
-  if (!presetName) { alert('Por favor ingresá un nombre para el preset.'); presetNombre.focus(); return; }
-  if (presetName.length > 100) { alert('El nombre no puede exceder 100 caracteres.'); return; }
+  if (!presetName) { alert(t('alert_preset_name')); presetNombre.focus(); return; }
+  if (presetName.length > 100) { alert(t('alert_preset_too_long')); return; }
 
   const data   = readForm();
   const errors = validateInvoiceData(data);
   if (errors.length > 0) {
-    if (!confirm('Advertencias:\n' + errors.join('\n') + '\n\n¿Deseas guardar igualmente?')) return;
+    if (!confirm(t('alert_warnings_prefix') + errors.join('\n') + t('alert_warnings_suffix'))) return;
   }
 
-  flash(btnSavePreset, '⏳ Guardando...', 8000);
+  flash(btnSavePreset, t('saving'), 8000);
 
   try {
     if (activePresetId) {
@@ -440,16 +447,16 @@ btnSavePreset.addEventListener('click', async () => {
 
     renderPresetList();
     btnDeletePreset.style.display = 'inline-block';
-    flash(btnSavePreset, '✅ Guardado');
+    flash(btnSavePreset, t('saved'));
   } catch (err) {
     console.error('Error guardando preset:', err);
-    flash(btnSavePreset, '❌ Error');
+    flash(btnSavePreset, t('error_saving'));
   }
 });
 
 btnDeletePreset.addEventListener('click', async () => {
   if (!activePresetId) return;
-  const confirmed = await showConfirmDialog('¿Eliminar este preset? Esta acción no se puede deshacer.', 'Eliminar preset');
+  const confirmed = await showConfirmDialog(t('confirm_delete_preset'), t('confirm_delete_pre_title'));
   if (!confirmed) return;
 
   try {
@@ -459,7 +466,7 @@ btnDeletePreset.addEventListener('click', async () => {
     renderPresetList();
     fillForm({});
     btnDeletePreset.style.display = 'none';
-    flash(btnDeletePreset, '✅ Eliminado');
+    flash(btnDeletePreset, t('deleted'));
   } catch (err) {
     console.error('Error eliminando preset:', err);
     alert('Error al eliminar el preset.');
@@ -671,6 +678,10 @@ function renderInvoice(data, containerId) {
     radioCorreo:      data.radioCorreo     || '',
   };
 
+  clone.querySelectorAll('[data-inv-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.invI18n);
+  });
+
   clone.querySelectorAll('[data-inv]').forEach(el => {
     const key = el.dataset.inv;
     if (key in fillMap) el.textContent = fillMap[key];
@@ -690,7 +701,7 @@ function renderInvoice(data, containerId) {
     }
   } else {
     const noQr = document.createElement('span');
-    noQr.textContent   = 'Sin QR';
+    noQr.textContent   = t('inv_no_qr');
     noQr.style.cssText = 'font-size:11px;color:#999;text-align:center';
     qrSlot.appendChild(noQr);
   }
@@ -783,10 +794,43 @@ async function captureInvoice() {
 function applyTheme(theme) {
   if (theme === 'light') {
     document.body.classList.add('light');
-    document.getElementById('hdThemeLabel').textContent = 'Modo oscuro';
+    document.getElementById('hdThemeLabel').textContent = t('dark_mode');
   } else {
     document.body.classList.remove('light');
-    document.getElementById('hdThemeLabel').textContent = 'Modo claro';
+    document.getElementById('hdThemeLabel').textContent = t('light_mode');
   }
   localStorage.setItem(THEME_KEY, theme);
 }
+
+(function() {
+  const btnOpen    = document.getElementById('btnSidebarToggle');
+  const btnClose   = document.getElementById('btnSidebarClose');
+  const backdrop   = document.getElementById('sidebarBackdrop');
+  const sidebar    = document.querySelector('.sidebar');
+
+  function openSidebar() {
+    sidebar.classList.add('mobile-visible');
+    backdrop.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('mobile-visible');
+    backdrop.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  if (btnOpen)  btnOpen.addEventListener('click', openSidebar);
+  if (btnClose) btnClose.addEventListener('click', closeSidebar);
+  if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+  document.getElementById('presetList')?.addEventListener('click', function(e) {
+    if (e.target.closest('.preset-item') && window.innerWidth <= 768) {
+      closeSidebar();
+    }
+  });
+
+  document.getElementById('btnNewPreset')?.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+})();
