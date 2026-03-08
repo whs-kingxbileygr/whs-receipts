@@ -802,21 +802,20 @@ function applyTheme(theme) {
   localStorage.setItem(THEME_KEY, theme);
 }
 
-(function() {
-  const btnOpen    = document.getElementById('btnSidebarToggle');
-  const btnClose   = document.getElementById('btnSidebarClose');
-  const backdrop   = document.getElementById('sidebarBackdrop');
-  const sidebar    = document.querySelector('.sidebar');
+document.addEventListener('DOMContentLoaded', function () {
+  var btnOpen  = document.getElementById('btnSidebarToggle');
+  var btnClose = document.getElementById('btnSidebarClose');
+  var backdrop = document.getElementById('sidebarBackdrop');
+  var sidebar  = document.querySelector('.sidebar');
 
   function openSidebar() {
-    sidebar.classList.add('mobile-visible');
-    backdrop.classList.add('visible');
+    if (sidebar)  sidebar.classList.add('mobile-visible');
+    if (backdrop) backdrop.classList.add('visible');
     document.body.style.overflow = 'hidden';
   }
-
   function closeSidebar() {
-    sidebar.classList.remove('mobile-visible');
-    backdrop.classList.remove('visible');
+    if (sidebar)  sidebar.classList.remove('mobile-visible');
+    if (backdrop) backdrop.classList.remove('visible');
     document.body.style.overflow = '';
   }
 
@@ -824,13 +823,12 @@ function applyTheme(theme) {
   if (btnClose) btnClose.addEventListener('click', closeSidebar);
   if (backdrop) backdrop.addEventListener('click', closeSidebar);
 
-  document.getElementById('presetList')?.addEventListener('click', function(e) {
-    if (e.target.closest('.preset-item') && window.innerWidth <= 768) {
-      closeSidebar();
-    }
+  var pl = document.getElementById('presetList');
+  if (pl) pl.addEventListener('click', function (e) {
+    if (window.innerWidth <= 768 && e.target.closest('.preset-item')) closeSidebar();
   });
-
-  document.getElementById('btnNewPreset')?.addEventListener('click', function() {
+  var bn = document.getElementById('btnNewPreset');
+  if (bn) bn.addEventListener('click', function () {
     if (window.innerWidth <= 768) closeSidebar();
   });
-})();
+});
